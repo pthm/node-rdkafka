@@ -5,7 +5,7 @@ import { Readable, Writable } from 'stream';
 export class Client extends NodeJS.EventEmitter {
     constructor(globalConf: any, SubClientType: any, topicConf: any);
 
-    connect(metadataOptions: any, cb?: (err: any, data: any) => any): Client;
+    connect(metadataOptions?: any, cb?: (err: any, data: any) => any): Client;
 
     getClient(): any;
 
@@ -19,6 +19,18 @@ export class Client extends NodeJS.EventEmitter {
 
     queryWatermarkOffsets(topic: any, partition: any, timeout: any, cb?: (err: any, offsets: any) => any): any;
 
+}
+
+export interface ConsumerStreamMessage {
+    value: Buffer,
+    size: number,
+    topic: string,
+    offset: number,
+    partition: number,
+    key?: string,
+    timestamp?: number
+}
+interface KafkaConsumerMessage extends ConsumerStreamMessage {
 }
 
 export class KafkaConsumer extends Client {
@@ -55,13 +67,16 @@ export class KafkaConsumer extends Client {
 
     setDefaultConsumeTimeout(timeoutMs: any): void;
 
-    subscribe(topics: any): any;
+    subscribe(topics: string[]): any;
 
     subscription(): any;
 
     unassign(): any;
 
     unsubscribe(): any;
+
+    on(event: 'data', listener: (data: KafkaConsumerMessage) => void): this;
+    on(event: string, listener: Function): this;
 
 }
 
@@ -72,7 +87,7 @@ export class Producer extends Client {
 
     poll(): any;
 
-    produce(topic: any, partition: any, message: any, key?: any, timestamp?: any, opaque?: any): any;
+    produce(topic: string, partition: any, message: any, key?: any, timestamp?: any, opaque?: any): any;
 
     setPollInterval(interval: any): any;
 
@@ -168,16 +183,6 @@ declare interface ConsumerStream extends Readable {
     consumer: KafkaConsumer;
     connect(options: any): void;
     close(cb?: Function): void;
-}
-
-declare interface ConsumerStreamMessage {
-  value: Buffer,
-  size: number,
-  topic: string,
-  offset: number,
-  partition: number,
-  key?: string,
-  timestamp?: number
 }
 
 export function createReadStream(conf: any, topicConf: any, streamOptions: any): ConsumerStream;
