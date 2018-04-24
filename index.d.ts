@@ -42,15 +42,16 @@ export class KafkaConsumer extends Client {
 
     commit(topicPartition: any): any;
 
-    commitMessage(msg: any): any;
+    commitMessage(msg: KafkaConsumerMessage): any;
 
-    commitMessageSync(msg: any): any;
+    commitMessageSync(msg: KafkaConsumerMessage): any;
 
     commitSync(topicPartition: any): any;
 
     committed(toppars: any, timeout: any, cb: any, ...args: any[]): any;
 
-    consume(number: any, cb?: any): void;
+    consume(number: any, cb?: (err: Error, msg: KafkaConsumerMessage) => void): void;
+    consume(cb: (err: Error, msg: KafkaConsumerMessage) => void): void;
     consume(): void;
 
     getWatermarkOffsets(topic: any, partition: any): any;
@@ -87,7 +88,7 @@ export class Producer extends Client {
 
     poll(): any;
 
-    produce(topic: string, partition: any, message: any, key?: any, timestamp?: any, opaque?: any): any;
+    produce(topic: string, partition: number | null, message: Buffer, key?: string, timestamp?: number, opaque?: any): any;
 
     setPollInterval(interval: any): any;
 
